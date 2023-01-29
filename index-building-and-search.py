@@ -44,16 +44,14 @@ indexer.set('city', stored=True)
 indexer.set('state', stored=True)
 # set method supports custom field types inheriting their default settings
 indexer.set('population', dimensions=1, stored=True)
-indexer.set('point', engine.SpatialField, stored=True)
 indexer.set('poly', engine.SpatialField, stored=True)
 # assigned fields can have a different key from their underlying field name
 indexer.fields['location'] = engine.NestedField('state.city')
 
 for doc in docs:
-    point = doc.pop('longitude'), doc.pop('latitude')
     poly = [(x[0], x[1]) for x in doc['location']]
     location = doc['state'] + '.' + doc['city']
-    indexer.add(doc, location=location, point=[point], poly=poly)
+    indexer.add(doc, location=location, poly=poly)
 indexer.commit()
 
 query = indexer.fields['poly'].within(34.458433, 31.5029, distance=100.0)
